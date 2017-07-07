@@ -13,6 +13,7 @@ import java.util.Scanner;
 import edu.mum.cs.projects.attendance.domain.entity.CourseOffering;
 
 public class FileUtil {
+	
 	public static final String ROOT_DIRECTORY = "src/main/resources/";
 	
 	private static Map<String, OutputStream> outputStreamMap = new HashMap<>();

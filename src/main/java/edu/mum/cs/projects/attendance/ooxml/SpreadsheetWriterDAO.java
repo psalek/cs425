@@ -23,8 +23,9 @@ import edu.mum.cs.projects.attendance.util.FileUtil;
  * <h1>Maharishi University of Management<br/>Computer Science Department</h1>
  * 
  * <p>Utility that generates an Excel spreadsheet.
- * Resulting Excel file will be saved under {@value #ROOT_DIRECTORY}</p>
+ * Resulting Excel file will be saved under {@value #FileUtil.ROOT_DIRECTORY}</p>
  *
+ * @author Hong An Nguyen
  * @author Payman Salek
  * 
  * @version 1.0.0

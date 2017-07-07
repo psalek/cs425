@@ -27,7 +27,7 @@ public class AttendanceReport {
 		AttendanceService service = context.getBean(AttendanceService.class);
 		
 		// The String argument is the start date of the block
-		service.createAttendanceReportForBlock("2017-06-26");
+		service.createAttendanceReportForBlock("2017-05-29");
 
 		System.out.println("\nAttendance Report App finished executing!");		
 	}

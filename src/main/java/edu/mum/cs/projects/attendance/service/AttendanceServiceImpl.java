@@ -3,7 +3,6 @@ package edu.mum.cs.projects.attendance.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ import edu.mum.cs.projects.attendance.domain.entity.Session;
 import edu.mum.cs.projects.attendance.domain.entity.Student;
 import edu.mum.cs.projects.attendance.domain.entity.Timeslot;
 import edu.mum.cs.projects.attendance.ooxml.SpreadsheetWriterDAO;
-import edu.mum.cs.projects.attendance.repository.BarcodeRecordRepository;
+import edu.mum.cs.projects.attendance.repository.DataAccessFacade;
 import edu.mum.cs.projects.attendance.util.DateUtil;
 
 /**
@@ -57,12 +56,11 @@ public class AttendanceServiceImpl implements AttendanceService {
 	private StudentService studentService;
 	
 	@Autowired
-	BarcodeRecordRepository barcodeRecordRepository;
+	private DataAccessFacade dataAccess;
 
 	@Override
 	public void countAttendancePerDay() {
-		List<BarcodeRecord> records = new LinkedList<>();
-		barcodeRecordRepository.findAll().forEach(br -> records.add(br));
+		List<BarcodeRecord> records = dataAccess.findMeditationRecords();
 		
 		Map<LocalDate, Long> dateMap = records.stream().filter(r -> r.getTimeslot().getId().equals("AM")).map(r -> r.getDate())
 				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
@@ -83,12 +81,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	public void createAttendanceReportForEntry(String entryDate) {
 		List<Student> students = studentService.getStudentsByEntry(entryDate);
 
-		Date beginDate = new Date();
-		beginDate.setTime(0);
-		List<BarcodeRecord> records = barcodeRecordRepository.findByDateBetween(beginDate, new Date());
-
-		records = records.stream().filter(b -> b.getLocation().equals("DB")).filter(b -> b.getTimeslot().equals("AM"))
-				.sorted(Comparator.comparing(BarcodeRecord::getDate)).distinct().collect(Collectors.toList());
+		List<BarcodeRecord> records = dataAccess.findMeditationRecords(entryDate);
 
 		List<LocalDate> dates = records.stream().map(r -> r.getDate()).collect(Collectors.toList());
 
@@ -132,9 +125,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 		AcademicBlock block = courseService
 				.getAcademicBlock(DateUtil.convertDateToString(courseOffering.getStartDate()));
 
-		Date beginDate = DateUtil.convertLocalDateToDate(block.getBeginDate());
-		Date endDate = DateUtil.convertLocalDateToDate(block.getEndDate());
-		List<BarcodeRecord> barcodeRecords = barcodeRecordRepository.findByDateBetween(beginDate, endDate);
+		List<BarcodeRecord> barcodeRecords = dataAccess.findMeditationRecords(block);
 
 		System.out.println("\nCreating attendance report for: " + courseOffering.getCourse() + " by "
 				+ courseOffering.getFaculty());

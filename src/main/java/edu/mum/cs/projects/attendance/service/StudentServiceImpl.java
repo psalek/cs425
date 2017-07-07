@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 import edu.mum.cs.projects.attendance.domain.entity.Barcode;
 import edu.mum.cs.projects.attendance.domain.entity.Student;
 import edu.mum.cs.projects.attendance.ooxml.SpreadsheetReaderDAO;
-import edu.mum.cs.projects.attendance.repository.StudentRepository;
-import edu.mum.cs.projects.attendance.util.DateUtil;
+import edu.mum.cs.projects.attendance.repository.DataAccessFacade;
 
 /**
  * <h1>Maharishi University of Management<br/>Computer Science Department</h1>
@@ -29,13 +28,9 @@ import edu.mum.cs.projects.attendance.util.DateUtil;
 public class StudentServiceImpl implements StudentService {
 	
 	@Autowired
-	private StudentRepository studentRepository;
+	private DataAccessFacade dataAccess;
 	
 	private Map<String, String> barcodeMap; 
-	
-	{
-
-	}
 	
 	private Map<String, String> getBarcodeMap() {
 		if(null == barcodeMap) {
@@ -56,7 +51,7 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public List<Student> getStudentsByEntry(String entryDate) {
-		return studentRepository.findByEntryDate(DateUtil.convertStringToDate(entryDate));
+		return dataAccess.findStudentsByEntryDate(entryDate);
 	}
 
 }

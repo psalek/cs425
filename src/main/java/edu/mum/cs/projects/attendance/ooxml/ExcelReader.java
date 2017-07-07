@@ -52,7 +52,7 @@ public class ExcelReader {
 		}
 	}
 
-	public static <K, V extends Identifiable<K>> List<V> getListEntities(String sheetName, Map<K, V> map, Function<Row, V> mapper) {
+	public static <K, V extends Identifiable<K>> List<V> getEntitiesList(String sheetName, Map<K, V> map, Function<Row, V> mapper) {
 		
 		Sheet sheet = getWorkbook().getSheet(sheetName);
 

@@ -64,7 +64,7 @@ public class DatabaseLoaderServiceImpl implements DatabaseLoaderService {
 		int index = 0;
 		em.getTransaction().begin();
 		for(BarcodeRecord br : barcodes) {
-			if(0 == ++index % 100) {
+			if(0 == ++index % 1000) {
 				System.out.println("\nCommitting transaction (100 inserts at a time)...\n");
 				em.getTransaction().commit();
 				em.getTransaction().begin();

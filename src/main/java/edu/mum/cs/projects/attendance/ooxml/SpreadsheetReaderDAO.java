@@ -62,16 +62,16 @@ public class SpreadsheetReaderDAO {
 	private volatile static List<Faculty> facultyList;
 	private volatile static List<Enrollment> enrollmentList;
 
-	private volatile static Map<String, AcademicBlock> academicBlockMap = new HashMap<>();
-	private volatile static Map<String, Location> locationMap = new HashMap<>();
-	private volatile static Map<String, Timeslot> timeslotMap = new HashMap<>();
-	private volatile static Map<Long, Session> sessionMap = new HashMap<>();
-	private volatile static Map<Long, Barcode> barcodeMap = new HashMap<>();
-	private volatile static Map<String, Student> studentMap = new HashMap<>();
-	private volatile static Map<String, Course> courseMap = new HashMap<>();
-	private volatile static Map<Long, CourseOffering> offeringMap = new HashMap<>();
-	private volatile static Map<Long, Faculty> facultyMap = new HashMap<>();
-	private volatile static Map<Long, Enrollment> enrollmentMap = new HashMap<>();
+	private volatile static Map<String, AcademicBlock> academicBlockMap;
+	private volatile static Map<String, Location> locationMap;
+	private volatile static Map<String, Timeslot> timeslotMap;
+	private volatile static Map<Long, Session> sessionMap;
+	private volatile static Map<Long, Barcode> barcodeMap;
+	private volatile static Map<String, Student> studentMap;
+	private volatile static Map<String, Course> courseMap;
+	private volatile static Map<Long, CourseOffering> offeringMap;
+	private volatile static Map<Long, Faculty> facultyMap;
+	private volatile static Map<Long, Enrollment> enrollmentMap;
 
 	public static Enrollment findEnrollment(Long id) {
 		loadEnrollmentList();
@@ -81,8 +81,9 @@ public class SpreadsheetReaderDAO {
 	public synchronized static List<Enrollment> loadEnrollmentList() {
 		if (null == enrollmentList) {
 			System.out.println("Loading list of enrollments...");
+			enrollmentMap = new HashMap<>();
 			enrollmentList = ExcelReader.<Long, Enrollment>
-				getListEntities(SHEET_ENROLLMENT, enrollmentMap, new EnrollmentParser());
+				getEntitiesList(SHEET_ENROLLMENT, enrollmentMap, new EnrollmentParser());
 			loadSessionList();
 		}
 		return enrollmentList;
@@ -96,8 +97,9 @@ public class SpreadsheetReaderDAO {
 	public synchronized static List<Faculty> loadFacultyList() {
 		if (null == facultyList) {
 			System.out.println("Loading list of faculty...");
+			facultyMap = new HashMap<>();
 			facultyList = ExcelReader.<Long, Faculty>
-				getListEntities(SHEET_FACULTY, facultyMap, new FacultyParser());
+				getEntitiesList(SHEET_FACULTY, facultyMap, new FacultyParser());
 			loadSessionList();
 		}
 		return facultyList;
@@ -111,8 +113,9 @@ public class SpreadsheetReaderDAO {
 	public synchronized static List<AcademicBlock> loadAcademicBlockList() {
 		if (null == academicBlockList) {
 			System.out.println("Loading list of academic blocks...");
+			academicBlockMap = new HashMap<>();
 			academicBlockList = ExcelReader.<String, AcademicBlock>
-				getListEntities(SHEET_BLOCK, academicBlockMap, new AcademicBlockParser());
+				getEntitiesList(SHEET_BLOCK, academicBlockMap, new AcademicBlockParser());
 			loadSessionList();
 		}
 		return academicBlockList;
@@ -126,8 +129,9 @@ public class SpreadsheetReaderDAO {
 	public synchronized static List<Location> loadLocationList() {
 		if (null == locationList) {
 			System.out.println("Loading list of course locations...");
+			locationMap = new HashMap<>();
 			locationList = ExcelReader.<String, Location>
-				getListEntities(SHEET_LOCATION, locationMap, new LocationParser());
+				getEntitiesList(SHEET_LOCATION, locationMap, new LocationParser());
 		}
 		return locationList;
 	}
@@ -140,8 +144,9 @@ public class SpreadsheetReaderDAO {
 	public static synchronized List<Timeslot> loadTimeslotList() {
 		if (null == timeslotList) {
 			System.out.println("Loading list of course timeslots...");
+			timeslotMap = new HashMap<>();
 			timeslotList = ExcelReader.<String, Timeslot>
-				getListEntities(SHEET_TIMESLOT, timeslotMap, new TimeslotParser());
+				getEntitiesList(SHEET_TIMESLOT, timeslotMap, new TimeslotParser());
 		}
 		return timeslotList;
 	}
@@ -154,8 +159,9 @@ public class SpreadsheetReaderDAO {
 	public synchronized static List<Session> loadSessionList() {
 		if (null == sessionList) {
 			System.out.println("Loading list of sessions...");
+			sessionMap = new HashMap<>();
 			sessionList = ExcelReader.<Long, Session>
-				getListEntities(SHEET_SESSION, sessionMap, new SessionParser());
+				getEntitiesList(SHEET_SESSION, sessionMap, new SessionParser());
 		}
 		return sessionList;
 	}
@@ -168,8 +174,9 @@ public class SpreadsheetReaderDAO {
 	public synchronized static List<Barcode> loadBarcodeList() {
 		if (null == barcodeList) {
 			System.out.println("Loading list of barcodes...");
+			barcodeMap = new HashMap<>();
 			barcodeList = ExcelReader.<Long, Barcode>
-				getListEntities(SHEET_BARCODE, barcodeMap, new BarcodeParser());
+				getEntitiesList(SHEET_BARCODE, barcodeMap, new BarcodeParser());
 		}
 		return barcodeList;
 	}
@@ -182,8 +189,9 @@ public class SpreadsheetReaderDAO {
 	public synchronized static List<Student> loadStudentList() {
 		if (null == studentList) {
 			System.out.println("Loading list of barcodes...");
+			studentMap = new HashMap<>();
 			studentList = ExcelReader.<String, Student>
-					getListEntities(SHEET_STUDENT, studentMap, new StudentParser());
+					getEntitiesList(SHEET_STUDENT, studentMap, new StudentParser());
 		}
 		return studentList;
 	}
@@ -196,8 +204,9 @@ public class SpreadsheetReaderDAO {
 	public synchronized static List<Course> loadCourseList() {
 		if (null == courseList) {
 			System.out.println("Loading list of barcodes...");
+			courseMap = new HashMap<>();
 			courseList = ExcelReader.<String, Course>
-					getListEntities(SHEET_COURSE, courseMap, new CourseParser());
+					getEntitiesList(SHEET_COURSE, courseMap, new CourseParser());
 		}
 		return courseList;
 	}
@@ -210,8 +219,9 @@ public class SpreadsheetReaderDAO {
 	public synchronized static List<CourseOffering> loadOfferingList() {
 		if (null == offeringList) {
 			System.out.println("Loading list of barcodes...");
+			offeringMap = new HashMap<>();
 			offeringList = ExcelReader.<Long, CourseOffering>
-					getListEntities(SHEET_OFFERING, offeringMap, new CourseOfferingParser());
+					getEntitiesList(SHEET_OFFERING, offeringMap, new CourseOfferingParser());
 		}
 		return offeringList;
 	}

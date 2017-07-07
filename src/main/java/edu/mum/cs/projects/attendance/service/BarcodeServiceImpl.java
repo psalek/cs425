@@ -15,25 +15,23 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import edu.mum.cs.projects.attendance.domain.entity.BarcodeRecord;
 import edu.mum.cs.projects.attendance.domain.entity.Location;
 import edu.mum.cs.projects.attendance.domain.entity.Timeslot;
-import edu.mum.cs.projects.attendance.repository.LocationRepository;
-import edu.mum.cs.projects.attendance.repository.TimeslotRepository;
+import edu.mum.cs.projects.attendance.repository.DataAccessFacade;
 import edu.mum.cs.projects.attendance.util.DateUtil;
 
 @Service
 public class BarcodeServiceImpl implements BarcodeService {
 	
-	private static final String FILE_PATH = "src/main/resources/barcodes/BarcodeRecords.txt";
+	@Value("${barcode.records.file.path}")
+	private String filePath;
 	
 	@Autowired
-	private LocationRepository locationRepository;
-	
-	@Autowired
-	private TimeslotRepository timeslotRepository;
+	private DataAccessFacade dataAccess;
 	
 	private static volatile Collection<BarcodeRecord> barcodeRecords;
 	
@@ -75,7 +73,7 @@ public class BarcodeServiceImpl implements BarcodeService {
 		
 		System.out.println("Loading scanned barcode records...");
 		
-		File file = new File(FILE_PATH);
+		File file = new File(filePath);
 		long fileSize = file.length();
 
 		Map<String, BarcodeRecord> dataMap = new HashMap<String, BarcodeRecord>((int)(fileSize/20));
@@ -114,27 +112,9 @@ public class BarcodeServiceImpl implements BarcodeService {
 		String barcode = parts[0];		
 		LocalDate date = DateUtil.convertDateToLocalDate(DateUtil.convertOldFormatStringToDate(parts[1]));
 		LocalTime time = LocalTime.of(00, 00);
-		Timeslot timeslot = timeslotRepository.findOne(parts[2]);
-		Location location = locationRepository.findOne(parts[3]);
+		Timeslot timeslot = dataAccess.findTimeslotById(parts[2]);
+		Location location = dataAccess.findLocationById(parts[3]);
 		
 		return new BarcodeRecord(barcode, date, time, timeslot, location);
 	}
-	
-//	private static Location getLocationById(String id) {
-//		List<Location> locations = SpreadsheetReaderDAO.getLocationList();
-//		
-//		return locations.stream().filter(l -> l.getId().equals(id)).findAny().get();
-//	}
-//	
-//	private static Timeslot getTimeslotById(String id) {
-//		List<Timeslot> slots = SpreadsheetReaderDAO.getTimeslotList();
-//		
-//		return slots.stream().filter(s -> s.getId().equals(id)).findAny().get();
-//	}
-//
-//	public static void main(String[] args) {
-//		List<BarcodeRecord> list = getBarcodeRecordsList();
-//		list.stream().forEach(System.out::println);
-//		System.out.println("Number of records processed: " + list.size());
-//	}
 }

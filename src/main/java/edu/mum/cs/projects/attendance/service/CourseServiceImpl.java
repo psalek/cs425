@@ -2,7 +2,6 @@ package edu.mum.cs.projects.attendance.service;
 
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,9 +13,7 @@ import edu.mum.cs.projects.attendance.domain.entity.AcademicBlock;
 import edu.mum.cs.projects.attendance.domain.entity.Course;
 import edu.mum.cs.projects.attendance.domain.entity.CourseOffering;
 import edu.mum.cs.projects.attendance.domain.entity.Enrollment;
-import edu.mum.cs.projects.attendance.repository.AcademicBlockRepository;
-import edu.mum.cs.projects.attendance.repository.CourseOfferingRepository;
-import edu.mum.cs.projects.attendance.util.DateUtil;
+import edu.mum.cs.projects.attendance.repository.DataAccessFacade;
 
 /**
  * <h1>Maharishi University of Management<br/>
@@ -35,15 +32,11 @@ import edu.mum.cs.projects.attendance.util.DateUtil;
 public class CourseServiceImpl implements CourseService {
 
 	@Autowired
-	CourseOfferingRepository courseOfferingRepository;
-
-	@Autowired
-	AcademicBlockRepository academicBlockRepository;
+	DataAccessFacade dataAccess;
 
 	@Override
 	public List<ComproEntry> getComproEntries(String startDate) {
-		Course course = new Course("Entry");
-		List<CourseOffering> offerings = courseOfferingRepository.findByCourse(course);
+		List<CourseOffering> offerings = dataAccess.findCourseOfferingByCourse(new Course("Entry"));
 
 		return offerings.stream().map(offering -> new ComproEntry(offering))
 				.filter(ce -> ce.getDate().isAfter(LocalDate.parse(startDate)))
@@ -52,21 +45,12 @@ public class CourseServiceImpl implements CourseService {
 
 	@Override
 	public List<CourseOffering> getCourseOfferings(String blockStartDate) {
-		Date date = DateUtil.convertStringToDate(blockStartDate);
-		AcademicBlock block = getAcademicBlock(blockStartDate);
-
-		List<CourseOffering> offerings = courseOfferingRepository.findByStartDate(date);
-
-		return offerings.stream()
-				.filter(o -> o.isOnCampus() && o.isActive())
-				.peek(o -> o.setBlock(block))
-				.collect(Collectors.toList());
+		return dataAccess.findCourseOfferingByStartDate(blockStartDate);
 	}
 
 	@Override
 	public AcademicBlock getAcademicBlock(String blockBeginDate) {
-		Date beginDate = DateUtil.convertStringToDate(blockBeginDate);
-		return academicBlockRepository.findByBeginDate(beginDate);
+		return dataAccess.finAcademicBlockByBeginDate(blockBeginDate);
 	}
 
 	@Override
